@@ -1,17 +1,30 @@
-
-
 import {
     ViewerApp,
     AssetManagerPlugin,
     GBufferPlugin,
+    timeout,
     ProgressivePlugin,
     TonemapPlugin,
     SSRPlugin,
     SSAOPlugin,
+    DiamondPlugin,
+    FrameFadePlugin,
+    GLTFAnimationPlugin,
+    GroundPlugin,
     BloomPlugin,
+    TemporalAAPlugin,
+    AnisotropyPlugin,
+    GammaCorrectionPlugin,
 
-    // addBasePlugins,
+    addBasePlugins,
+    ITexture, TweakpaneUiPlugin, AssetManagerBasicPopupPlugin, CanvasSnipperPlugin,
+
+    IViewerPlugin,
+
+    // Color, // Import THREE.js internals
+    // Texture, // Import THREE.js internals
 } from "webgi";
+
 import "./styles.css";
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -46,13 +59,24 @@ async function setupViewer(){
     await viewer.addPlugin(BloomPlugin)
     // await viewer.addPlugin(TemporalAAPlugin)
     // await viewer.addPlugin(AnisotropyPlugin)
-    // await addBasePlugins(viewer)
+    
+    // or use this to add all main ones at once.
+    await addBasePlugins(viewer)
 
-    // await viewer.addPlugin(CanvasSnipperPlugin)
+    // Add more plugins not available in base, like CanvasSnipperPlugin which has helpers to download an image of the canvas.
+    await viewer.addPlugin(CanvasSnipperPlugin)
+    
 
     viewer.renderer.refreshPipeline()
 
     await manager.addFromPath("./assets/vintage-watch.glb")
+
+
+    // Add some UI for tweak and testing.
+    const uiPlugin = await viewer.addPlugin(TweakpaneUiPlugin)
+    // Add plugins to the UI to see their settings.
+    uiPlugin.setupPlugins<IViewerPlugin>(TonemapPlugin, CanvasSnipperPlugin)
+    
 
     function handleScrollAnimation() {
         const tl = gsap.timeline()
